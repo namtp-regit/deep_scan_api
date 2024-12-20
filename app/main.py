@@ -3,9 +3,9 @@ from app.routes import items, users
 from sqlalchemy.exc import SQLAlchemyError
 from contextlib import asynccontextmanager
 from app.database.connect import check_connection
+from app.middleware.auth import AuthMiddleware
 
 # check app startup
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
@@ -20,6 +20,9 @@ async def lifespan(app: FastAPI):
     print("Application is shutting down...")
 
 app = FastAPI(lifespan=lifespan)
+
+# middleware authentication
+app.add_middleware(AuthMiddleware)
 
 # Include routers
 app.include_router(items.router)

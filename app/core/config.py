@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     db_username: str = "root"
     db_password: str = ""
 
+    algorithm: str = ""
+    secret_key: str = ""
+
     @property
     def database_url(self) -> str:
         return f"mysql+pymysql://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_database}"
