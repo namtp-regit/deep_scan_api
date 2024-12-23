@@ -2,11 +2,20 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from jose import jwt, JWTError
 from app.core.config import settings
+from app.utils import status_code
+
 
 class AuthMiddleware:
     def __init__(self, app: FastAPI):
         self.app = app
-        self.excluded_paths = ["/", "/docs", "/openapi.json", "/redoc", "/login", "/forgetPassword"]
+        self.excluded_paths = [
+            "/",
+            "/docs",
+            "/openapi.json",
+            "/redoc",
+            "/login",
+            "/forgetPassword",
+        ]
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
@@ -22,7 +31,7 @@ class AuthMiddleware:
             if not authorization or not authorization.startswith("Bearer "):
                 response = JSONResponse(
                     {"detail": "Unauthorized: Missing or invalid token"},
-                    status_code=401,
+                    status_code=status_code.UNAUTHORIZED,
                 )
                 await response(scope, receive, send)
                 return
@@ -32,7 +41,8 @@ class AuthMiddleware:
                 jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
             except JWTError:
                 response = JSONResponse(
-                    {"detail": "Unauthorized: Invalid token"}, status_code=401
+                    {"detail": "Unauthorized: Invalid token"},
+                    status_code=status_code.UNAUTHORIZED,
                 )
                 await response(scope, receive, send)
                 return

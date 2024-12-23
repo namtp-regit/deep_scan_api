@@ -36,6 +36,11 @@ $ alembic downgrade
 $ alembic upgrade head
 ```
 
+```bash
+# run formatter
+$ black .
+```
+
 ## Running the app
 
 ```bash

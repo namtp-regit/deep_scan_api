@@ -8,12 +8,14 @@ from alembic import context
 import os
 import importlib
 
+
 def import_all_models():
-    models_folder = os.path.join(os.path.dirname(__file__), '../app/models')
+    models_folder = os.path.join(os.path.dirname(__file__), "../app/models")
     for filename in os.listdir(models_folder):
-        if filename.endswith('.py') and filename != '__init__.py':
+        if filename.endswith(".py") and filename != "__init__.py":
             module_name = f"app.models.{filename[:-3]}"
             importlib.import_module(module_name)
+
 
 import_all_models()
 
@@ -76,9 +78,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     app_name: str = "FastAPI Project"
     debug: bool = True
@@ -20,5 +21,6 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         extra = "allow"
+
 
 settings = Settings()
