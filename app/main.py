@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from app.core.cors import add_cors
+from app.core.exception_handlers import generic_exception_handler, http_exception_handler
+from app.core.validation_exception_handlers import validation_exception_handler
 from app.routes import auth, items, users
 from sqlalchemy.exc import SQLAlchemyError
 from contextlib import asynccontextmanager
 from app.database.connect import check_connection
 from app.middleware.auth import AuthMiddleware
-from app.utils.status_code import VALIDATE_ERROR
 
 
 # check app startup
@@ -26,35 +27,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# add custom message validation
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(RequestValidationError, http_exception_handler)
+app.add_exception_handler(RequestValidationError, generic_exception_handler)
 
-# custom message validation
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    errors = {}
-    for error in exc.errors():
-        field = ".".join(map(str, error["loc"][1:]))
-        msg = error["msg"]
-        if field not in errors:
-            errors[field] = []
-        errors[field].append(msg)
-
-    first_field = list(errors.keys())[0]
-    first_message = errors[first_field][0]
-    other_errors_count = len(errors) - 1
-    suffix = (
-        f" (and {other_errors_count} more error{'s' if other_errors_count > 1 else ''})"
-        if other_errors_count > 0
-        else ""
-    )
-
-    return JSONResponse(
-        status_code=VALIDATE_ERROR,
-        content={
-            "message": f"{first_message}{suffix}",
-            "errors": errors,
-        },
-    )
-
+# add cors middleware
+add_cors(app)
 
 # middleware authentication
 app.add_middleware(AuthMiddleware)
