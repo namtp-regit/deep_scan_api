@@ -1,6 +1,5 @@
-from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String
-from app.database.connect import Base
+from app.database.base import Base
 
 
 class User(Base):
