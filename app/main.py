@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from app.core.cors import add_cors
 from app.core.exception_handlers import generic_exception_handler, http_exception_handler
 from app.core.validation_exception_handlers import validation_exception_handler
+from app.middleware.http_logger import log_http_requests
 from app.routes import auth, items, users
 from sqlalchemy.exc import SQLAlchemyError
 from contextlib import asynccontextmanager
@@ -34,6 +35,9 @@ app.add_exception_handler(RequestValidationError, generic_exception_handler)
 
 # add cors middleware
 add_cors(app)
+
+# add logging middleware
+app.middleware("http")(log_http_requests)
 
 # middleware authentication
 app.add_middleware(AuthMiddleware)
