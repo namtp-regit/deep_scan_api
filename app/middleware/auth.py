@@ -15,6 +15,7 @@ class AuthMiddleware:
             "/redoc",
             "/login",
             "/forgetPassword",
+            "/auth/login",
         ]
 
     async def __call__(self, scope, receive, send):
