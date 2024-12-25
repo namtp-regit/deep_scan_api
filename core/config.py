@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     algorithm: str = ""
     secret_key: str = ""
+    expire: int = ""
 
     timezone: str = ""
 

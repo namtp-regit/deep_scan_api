@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from jose import jwt, JWTError
 from core.config import settings
-from utils import status_code
 
 
 class AuthMiddleware:
@@ -32,7 +31,7 @@ class AuthMiddleware:
             if not authorization or not authorization.startswith("Bearer "):
                 response = JSONResponse(
                     {"detail": "Unauthorized: Missing or invalid token"},
-                    status_code=status_code.UNAUTHORIZED,
+                    status_code=status.HTTP_401_UNAUTHORIZED,
                 )
                 await response(scope, receive, send)
                 return
@@ -43,7 +42,7 @@ class AuthMiddleware:
             except JWTError:
                 response = JSONResponse(
                     {"detail": "Unauthorized: Invalid token"},
-                    status_code=status_code.UNAUTHORIZED,
+                    status_code=status.HTTP_401_UNAUTHORIZED,
                 )
                 await response(scope, receive, send)
                 return

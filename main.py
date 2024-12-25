@@ -1,32 +1,20 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from core.cors import add_cors
+from core.custom_openapi import custom_openapi
 from core.exception_handlers import generic_exception_handler, http_exception_handler
+from core.lifespan import lifespan
 from core.validation_exception_handlers import validation_exception_handler
 from app.middleware.http_logger import log_http_requests
 from app.controllers import auth, items, users
-from sqlalchemy.exc import SQLAlchemyError
-from contextlib import asynccontextmanager
-from database.connect import check_connection
 from app.middleware.auth import AuthMiddleware
 
 
-# check app startup
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    try:
-        if not check_connection():
-            raise SQLAlchemyError("Database connection failed during startup")
-        print("Database connected successfully!")
-    except Exception as e:
-        print(f"Error during lifespan startup: {e}")
-        raise e
-
-    yield
-    print("Application is shutting down...")
-
-
 app = FastAPI(lifespan=lifespan)
+
+# show authorize /docs
+app.openapi = lambda: custom_openapi(app)
+
 
 # add custom message validation
 app.add_exception_handler(RequestValidationError, validation_exception_handler)

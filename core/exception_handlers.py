@@ -1,7 +1,6 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from utils.status_code import SERVER_ERROR
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 
 
@@ -14,6 +13,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 async def generic_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
-        status_code=SERVER_ERROR,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"message": "An unexpected error occurred."},
     )

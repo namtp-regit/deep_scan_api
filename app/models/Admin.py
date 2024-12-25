@@ -10,3 +10,6 @@ class Admin(Base):
     password: str = Column(String(255), nullable=False)
     role = Column(Integer, nullable=False, default=1)
     __table_args__ = (CheckConstraint("role IN (1, 2, 3)", name="check_role_valid"),)
+
+    class Config:
+        orm_mode = True
