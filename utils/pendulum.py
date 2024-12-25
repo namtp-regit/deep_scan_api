@@ -1,5 +1,5 @@
 import pendulum
-from app.core.config import settings
+from core.config import settings
 
 DEFAULT_TIMEZONE = settings.timezone
 

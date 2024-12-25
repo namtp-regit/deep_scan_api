@@ -1,6 +1,6 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from app.utils.status_code import SERVER_ERROR
+from utils.status_code import SERVER_ERROR
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 

@@ -1,5 +1,5 @@
 from fastapi import Request
-from app.core.logger import logger
+from core.logger import logger
 
 
 async def log_http_requests(request: Request, call_next):

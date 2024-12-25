@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from app.core.cors import add_cors
-from app.core.exception_handlers import generic_exception_handler, http_exception_handler
-from app.core.validation_exception_handlers import validation_exception_handler
+from core.cors import add_cors
+from core.exception_handlers import generic_exception_handler, http_exception_handler
+from core.validation_exception_handlers import validation_exception_handler
 from app.middleware.http_logger import log_http_requests
-from app.routes import auth, items, users
+from app.controllers import auth, items, users
 from sqlalchemy.exc import SQLAlchemyError
 from contextlib import asynccontextmanager
-from app.database.connect import check_connection
+from database.connect import check_connection
 from app.middleware.auth import AuthMiddleware
 
 

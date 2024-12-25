@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
-
-from app.utils.constants import MAX_STRING, MIN_STRING
+from utils.constants import MAX_STRING, MIN_STRING
 
 
 class LoginRequest(BaseModel):

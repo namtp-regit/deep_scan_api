@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from jose import jwt, JWTError
-from app.core.config import settings
-from app.utils import status_code
+from core.config import settings
+from utils import status_code
 
 
 class AuthMiddleware:
