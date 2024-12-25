@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     algorithm: str = ""
     secret_key: str = ""
 
+    timezone: str = ""
+
     @property
     def database_url(self) -> str:
         return f"mysql+pymysql://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_database}"
