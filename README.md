@@ -37,6 +37,11 @@ $ alembic upgrade head
 ```
 
 ```bash
+# seeder
+$ python -m database.seeds.admin
+```
+
+```bash
 # run formatter
 $ black .
 ```
