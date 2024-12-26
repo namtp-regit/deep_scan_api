@@ -1,8 +1,9 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
+from app.requests.list_request import RequestModel
 from app.requests.user_request import CreateUserRequest, UpdateUserRequest
 from app.services.user_service import UserService
 from sqlalchemy.orm import Session
+from core.extract_request_params import extract_request_params
 from core.send_response import send_response
 from database.connect import get_db
 
@@ -15,18 +16,9 @@ def get_users(db: Session = Depends(get_db)):
 
 
 @router.get("/list")
-def list(
-    search: str = Query(None, description="Search"),
-    filters: Optional[List[str]] = Query(None, description="Filters in JSON format"),
-    orders: Optional[List[str]] = Query(None, description="Orders in JSON format"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(10, description="Number of items per page"),
-    db: Session = Depends(get_db),
-):
+def list(request: RequestModel = Depends(), db: Session = Depends(get_db)):
     service = UserService(db)
-    response = service.get_data(
-        search=search, filters=filters, orders=orders, page=page, per_page=per_page
-    )
+    response = service.get_data(extract_request_params(request))
     return send_response(status.HTTP_200_OK, "User list successfully", response)
 
 
