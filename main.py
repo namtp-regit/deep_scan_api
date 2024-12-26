@@ -10,7 +10,7 @@ from core.exception_handlers import (
 from core.lifespan import lifespan
 from core.validation_exception_handlers import validation_exception_handler
 from app.middleware.http_logger import log_http_requests
-from app.controllers import auth, items, users
+from app.controllers import auth, users
 from app.middleware.auth import AuthMiddleware
 
 
@@ -37,7 +37,6 @@ app.add_middleware(AuthMiddleware)
 
 # Include routers
 app.include_router(auth.router)
-app.include_router(items.router)
 app.include_router(users.router)
 
 
