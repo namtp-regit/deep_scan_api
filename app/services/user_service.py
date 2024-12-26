@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from app.models.User import User
+from fastapi import status
 from app.requests.user_request import CreateUserRequest, UpdateUserRequest
-from fastapi import HTTPException, status
 from app.services.base_service import BaseService
+from core.send_response import raise_exception
 
 
 class UserService(BaseService):
@@ -26,9 +27,7 @@ class UserService(BaseService):
             with db.begin():
                 existing_user = db.query(User).filter_by(email=user_data.email).first()
                 if existing_user:
-                    raise HTTPException(
-                        status.HTTP_400_BAD_REQUEST, detail="Email already registered"
-                    )
+                    raise_exception(status.HTTP_400_BAD_REQUEST, "Email already registered")
 
                 user = User(name=user_data.username, email=user_data.email)
                 db.add(user)
@@ -36,8 +35,8 @@ class UserService(BaseService):
 
         except Exception as e:
             db.rollback()
-            raise HTTPException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to create user: {str(e)}"
+            raise_exception(
+                status.HTTP_500_INTERNAL_SERVER_ERROR, f"Failed to create user: {str(e)}"
             )
 
     def create_user(user: CreateUserRequest, db: Session):
@@ -50,13 +49,13 @@ class UserService(BaseService):
     def get_user(user_id: int, db: Session):
         user = db.get(User, user_id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
         return user
 
     def update_user(user_id: int, user_data: UpdateUserRequest, db: Session):
         user = db.get(User, user_id)
         if not user:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
         user_dump = user_data.model_dump(exclude_unset=True)
         user.sqlmodel_update(user_dump)
         db.add(user)
@@ -67,7 +66,7 @@ class UserService(BaseService):
     def delete_user(user_id: int, db: Session):
         user = db.get(User, user_id)
         if not user:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
         db.delete(user)
         db.commit()
         return {"ok": True}
