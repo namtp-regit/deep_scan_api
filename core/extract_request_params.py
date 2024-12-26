@@ -1,4 +1,4 @@
-from app.requests.list_request import RequestModel
+from app.requests.param_request import RequestModel
 
 
 def extract_request_params(request: RequestModel):

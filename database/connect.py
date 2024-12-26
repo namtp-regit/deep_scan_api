@@ -20,7 +20,6 @@ def get_db():
 
 # check connection
 def check_connection():
-    print(settings.database_url)
     try:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))

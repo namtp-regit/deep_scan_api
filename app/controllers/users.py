@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from app.requests.list_request import RequestModel
+from app.requests.param_request import RequestModel
 from app.requests.user_request import CreateUserRequest, UpdateUserRequest
 from app.services.user_service import UserService
 from sqlalchemy.orm import Session
@@ -18,7 +18,7 @@ def get_users(db: Session = Depends(get_db)):
 @router.get("/list")
 def list(request: RequestModel = Depends(), db: Session = Depends(get_db)):
     service = UserService(db)
-    response = service.get_data(extract_request_params(request))
+    response = service.get_data(**extract_request_params(request))
     return send_response(status.HTTP_200_OK, "User list successfully", response)
 
 

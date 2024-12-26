@@ -13,6 +13,9 @@ class UserService(BaseService):
         self.filter_ables = {"email": self.filter_by_email}
         self.order_ables = {"name": "name", "created_at": "created_at"}
 
+    def make_new_query(self):
+        return self.session.query(User)
+
     def filter_by_email(self, query, filter):
         if filter:
             return query.filter(self.model.email == str(filter))

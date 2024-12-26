@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import json
 from math import ceil
 from sqlalchemy.orm import Session
@@ -5,7 +6,7 @@ from sqlalchemy import asc, desc
 from sqlalchemy.sql.expression import or_
 
 
-class BaseService:
+class BaseService(ABC):
     def __init__(self, model, session: Session):
         self.model = model
         self.session = session
@@ -14,6 +15,10 @@ class BaseService:
         self.order_ables = {}
         self.filter_ables = {}
         self.per_page = 10
+
+    @abstractmethod
+    def make_new_query(self):
+        pass
 
     def apply_search(self, query, search: str):
         if not search or not self.search_ables:
@@ -30,7 +35,6 @@ class BaseService:
             return query
 
         decoded_filters = [json.loads(item) for item in filters]
-        print("decoded_filters", decoded_filters)
         for filter_item in decoded_filters:
             key = filter_item.get("key")
             data = filter_item.get("data")
@@ -70,9 +74,10 @@ class BaseService:
         return query.offset(offset).limit(per_page)
 
     def get_data(self, search=None, filters=None, orders=None, page=1, per_page=None, all=False):
-        query = self.session.query(self.model)
+        # query = self.session.query(self.model)
 
         # apply conditions
+        query = self.make_new_query()
         query = self.apply_search(query, search)
         query = self.apply_filters(query, filters)
         query = self.apply_order(query, orders)
