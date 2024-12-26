@@ -6,9 +6,9 @@ def custom_openapi(app):
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="Custom API",
+        title="Deep scan API",
         version="1.0.0",
-        description="Custom API with JSON payload for login",
+        description="Deep scan API with JSON payload for login",
         routes=app.routes,
     )
 

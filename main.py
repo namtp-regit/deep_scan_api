@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, HTTPException
 from core.cors import add_cors
 from core.custom_openapi import custom_openapi
 from core.exception_handlers import generic_exception_handler, http_exception_handler
@@ -18,8 +18,8 @@ app.openapi = lambda: custom_openapi(app)
 
 # add custom message validation
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(RequestValidationError, http_exception_handler)
-app.add_exception_handler(RequestValidationError, generic_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
 
 # add cors middleware
 add_cors(app)

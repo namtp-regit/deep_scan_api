@@ -7,3 +7,6 @@ class User(Base):
     id: int = Column(Integer, primary_key=True, autoincrement=True)
     name: str = Column(String(150), nullable=False)
     email: str = Column(String(100), unique=True, nullable=False)
+
+    class Config:
+        orm_mode = True
