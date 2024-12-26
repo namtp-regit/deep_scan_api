@@ -6,6 +6,7 @@ from app.requests.login_request import LoginRequest, Token
 from core.jwt_handler import create_access_token
 from core.config import settings
 from core.jwt_handler import blacklist
+from core.send_response import raise_exception
 
 
 def authenticate(db: Session, mail_address: str, password: str):
@@ -38,8 +39,6 @@ def login(db: Session, request: LoginRequest) -> Token:
 
 def logout(token: str):
     if token in blacklist:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Token is already revoked"
-        )
+        raise_exception(status.HTTP_400_BAD_REQUEST, "Token is already revoked")
     blacklist.add(token)
     return {"message": "Logged out successfully!"}
