@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.staticfiles import StaticFiles
 from core.cors import add_cors
 from core.custom_openapi import custom_openapi
 from core.exception_handlers import (
@@ -10,11 +11,14 @@ from core.exception_handlers import (
 from core.lifespan import lifespan
 from core.validation_exception_handlers import validation_exception_handler
 from app.middleware.http_logger import log_http_requests
-from app.controllers import auth, users
+from app.controllers import auth, uploads, users
 from app.middleware.auth import AuthMiddleware
 
 
 app = FastAPI(lifespan=lifespan)
+
+# mount static files
+app.mount("/public", StaticFiles(directory="public"), name="public")
 
 # show authorize /docs
 app.openapi = lambda: custom_openapi(app)
@@ -38,6 +42,7 @@ app.add_middleware(AuthMiddleware)
 # Include routers
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(uploads.router)
 
 
 @app.get("/")

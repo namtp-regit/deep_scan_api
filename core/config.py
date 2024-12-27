@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     mail_from_address: str = "no-reply@example.com"
     mail_from_name: str = "FastAPI Project"
 
+    # upload file
+    upload_dir: str = "public/uploads"
+    allowed_content_types: str = "image/jpeg", "image/png", "application/pdf"
+    max_file_size: int = 5 * 1024 * 1024
+
     @property
     def database_url(self) -> str:
         return f"mysql+pymysql://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_database}"
@@ -49,6 +54,10 @@ class Settings(BaseSettings):
             USE_CREDENTIALS=True,
             VALIDATE_CERTS=True,
         )
+
+    @property
+    def content_types(self):
+        return self.allowed_content_types.split(",")
 
     class Config:
         env_file = ".env"

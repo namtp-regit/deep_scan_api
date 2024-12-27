@@ -8,7 +8,10 @@ async def log_http_requests(request: Request, call_next):
 
     if request.method in ["POST", "PUT", "PATCH"]:
         body = await request.body()
-        logger.info(f"Body: {body.decode('utf-8')}")
+        try:
+            body.decode("utf-8")
+        except UnicodeDecodeError:
+            logger.warning("Cannot decode body as UTF-8. It might be binary data.")
 
     response = await call_next(request)
 
