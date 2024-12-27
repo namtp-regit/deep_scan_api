@@ -10,37 +10,42 @@ from database.connect import get_db
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserService(db)
+
+
 @router.get("/")
-def get_users(db: Session = Depends(get_db)):
-    return UserService.get_users(db)
+def get_users(user_service: UserService = Depends(get_user_service)):
+    return user_service.get_users()
 
 
 @router.get("/list")
-def list(request: RequestModel = Depends(), db: Session = Depends(get_db)):
-    service = UserService(db)
-    response = service.get_data(**extract_request_params(request))
+def list(request: RequestModel = Depends(), user_service: UserService = Depends(get_user_service)):
+    response = user_service.get_data(**extract_request_params(request))
     return send_response(status.HTTP_200_OK, "User list successfully", response)
 
 
 @router.get("/{user_id}")
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    response = UserService.get_user(user_id, db)
+def get_user(user_id: int, user_service: UserService = Depends(get_user_service)):
+    response = user_service.get_user(user_id)
     return send_response(status.HTTP_200_OK, "User detail successfully", response)
 
 
 @router.post("/")
-def create_user(user: CreateUserRequest, db: Session = Depends(get_db)):
-    response = UserService.create_user(user, db)
+def create_user(user: CreateUserRequest, user_service: UserService = Depends(get_user_service)):
+    response = user_service.create_user(user)
     return send_response(status.HTTP_201_CREATED, "User create successfully", response)
 
 
 @router.patch("/{user_id}")
-def update_user(user_id: int, user: UpdateUserRequest, db: Session = Depends(get_db)):
-    response = UserService.update_user(user_id, user, db)
+def update_user(
+    user_id: int, user: UpdateUserRequest, user_service: UserService = Depends(get_user_service)
+):
+    response = user_service.update_user(user_id, user)
     return send_response(status.HTTP_200_OK, "User update successfully", response)
 
 
 @router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    response = UserService.delete_user(user_id, db)
+def delete_user(user_id: int, user_service: UserService = Depends(get_user_service)):
+    response = user_service.delete_user(user_id)
     return send_response(status.HTTP_200_OK, "User deleted successfully", response)
