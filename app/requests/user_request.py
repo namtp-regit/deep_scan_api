@@ -6,7 +6,7 @@ class CreateUserRequest(BaseModel):
     name: str
     email: str
 
-    # Validator tùy chỉnh
+    # custom validator name
     @field_validator("name")
     def name_cannot_contain_special_chars(cls, v):
         if not v.isalnum():

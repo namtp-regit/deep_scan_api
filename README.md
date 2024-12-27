@@ -8,6 +8,12 @@ A new FastApi project.
 ```bash
 # create virtual environment
 $ python -m venv venv
+
+# linux, macos
+$ source .venv/bin/activate
+# window powershell
+$ .venv\Scripts\Activate.ps1
+# window bash
 $ source venv/Scripts/activate
 
 # note: save package after install new

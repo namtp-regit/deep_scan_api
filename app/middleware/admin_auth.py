@@ -4,17 +4,16 @@ from jose import jwt, JWTError
 from core.config import settings
 
 
-class AuthMiddleware:
+class AdminAuthMiddleware:
     def __init__(self, app: FastAPI):
         self.app = app
         self.excluded_paths = [
-            "/",
-            "/docs",
-            "/openapi.json",
-            "/redoc",
-            "/login",
-            "/forgetPassword",
-            "/auth/login",
+            "/admin/docs",
+            "/admin/openapi.json",
+            "/admin/redoc",
+            "/admin/login",
+            "/admin/forgetPassword",
+            "/admin/auth/login",
         ]
 
     async def __call__(self, scope, receive, send):
