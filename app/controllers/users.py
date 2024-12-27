@@ -10,8 +10,8 @@ from database.connect import get_db
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-def get_user_service(db: Session = Depends(get_db)) -> UserService:
-    return UserService(db)
+def get_user_service(session: Session = Depends(get_db)) -> UserService:
+    return UserService(session)
 
 
 @router.get("/")

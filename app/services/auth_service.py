@@ -9,36 +9,38 @@ from core.jwt_handler import blacklist
 from core.send_response import raise_exception
 
 
-def authenticate(db: Session, mail_address: str, password: str):
-    admin = db.query(Admin).filter(Admin.mail_address == mail_address).first()
-    if not admin:
-        return None
-    if not bcrypt.checkpw(password.encode('utf-8'), admin.password.encode('utf-8')):
-        return None
-    return admin
+class AuthService:
+    def __init__(self, session: Session):
+        self.session = session
 
+    def authenticate(self, mail_address: str, password: str):
+        admin = self.session.query(Admin).filter(Admin.mail_address == mail_address).first()
+        if not admin:
+            return None
+        if not bcrypt.checkpw(password.encode('utf-8'), admin.password.encode('utf-8')):
+            return None
+        return admin
 
-def login(db: Session, request: LoginRequest) -> Token:
-    admin = authenticate(db, request.mail_address, request.password)
-    if not admin:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid mail_address or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    def login(self, request: LoginRequest) -> Token:
+        admin = self.authenticate(request.mail_address, request.password)
+        if not admin:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid mail_address or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
-    # create JWT token
-    access_token = create_access_token(data={"sub": str(admin.id)})
-    return {
-        "access_token": access_token,
-        "token_type": "Bearer",
-        "expires_in": settings.expire,
-        "me": admin,
-    }
+        # create JWT token
+        access_token = create_access_token(data={"sub": str(admin.id)})
+        return {
+            "access_token": access_token,
+            "token_type": "Bearer",
+            "expires_in": settings.expire,
+            "me": admin,
+        }
 
-
-def logout(token: str):
-    if token in blacklist:
-        raise_exception(status.HTTP_400_BAD_REQUEST, "Token is already revoked")
-    blacklist.add(token)
-    return {"message": "Logged out successfully!"}
+    def logout(self, token: str):
+        if token in blacklist:
+            raise_exception(status.HTTP_400_BAD_REQUEST, "Token is already revoked")
+        blacklist.add(token)
+        return {"message": "Logged out successfully!"}

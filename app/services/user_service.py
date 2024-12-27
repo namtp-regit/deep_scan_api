@@ -12,6 +12,7 @@ class UserService(BaseService):
         self.search_ables = ["name", "email"]
         self.filter_ables = {"email": self.filter_by_email}
         self.order_ables = {"name": "name", "created_at": "created_at"}
+        self.session = session
 
     def make_new_query(self):
         return self.session.query(User)
@@ -21,55 +22,55 @@ class UserService(BaseService):
             return query.filter(self.model.email == str(filter))
         return query
 
-    def get_users(db: Session):
-        users = db.query(User).all()
+    def get_users(self):
+        users = self.session.query(User).all()
         return users
 
-    def create_user_transaction(user_data: CreateUserRequest, db: Session):
+    def create_user_transaction(self, user_data: CreateUserRequest):
         try:
-            with db.begin():
-                existing_user = db.query(User).filter_by(email=user_data.email).first()
+            with self.session.begin():
+                existing_user = self.session.query(User).filter_by(email=user_data.email).first()
                 if existing_user:
                     raise_exception(status.HTTP_400_BAD_REQUEST, "Email already registered")
 
                 user = User(name=user_data.username, email=user_data.email)
-                db.add(user)
+                self.session.add(user)
                 return user
 
         except Exception as e:
-            db.rollback()
+            self.session.rollback()
             raise_exception(
                 status.HTTP_500_INTERNAL_SERVER_ERROR, f"Failed to create user: {str(e)}"
             )
 
-    def create_user(user: CreateUserRequest, db: Session):
+    def create_user(self, user: CreateUserRequest):
         userCreate = User(**user.model_dump())
-        db.add(userCreate)
-        db.commit()
-        db.refresh(userCreate)
+        self.session.add(userCreate)
+        self.session.commit()
+        self.session.refresh(userCreate)
         return userCreate
 
-    def get_user(user_id: int, db: Session):
-        user = db.get(User, user_id)
+    def get_user(self, user_id: int):
+        user = self.session.get(User, user_id)
         if not user:
             raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
         return user
 
-    def update_user(user_id: int, user_data: UpdateUserRequest, db: Session):
-        user = db.get(User, user_id)
+    def update_user(self, user_id: int, user_data: UpdateUserRequest):
+        user = self.session.get(User, user_id)
         if not user:
             raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
         user_dump = user_data.model_dump(exclude_unset=True)
         user.sqlmodel_update(user_dump)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+        self.session.add(user)
+        self.session.commit()
+        self.session.refresh(user)
         return user
 
-    def delete_user(user_id: int, db: Session):
-        user = db.get(User, user_id)
+    def delete_user(self, user_id: int):
+        user = self.session.get(User, user_id)
         if not user:
             raise_exception(status.HTTP_404_NOT_FOUND, "User not found")
-        db.delete(user)
-        db.commit()
+        self.session.delete(user)
+        self.session.commit()
         return {"ok": True}
